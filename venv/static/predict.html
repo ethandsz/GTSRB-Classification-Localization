@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Prediction</title>
+</head>
+<body background="1.jpg">
+<input id="image-selector" type="file">
+<button id="predict-button">Predict</button>
+<a href="http://localhost:5000/plot.png">
+   <button>Open Prediction</button>
+</a>
+<p style="font-weight:bold">Instructions:</p>
+<p>***This service only works on 10 different types of signs [PLEASE CONVERT TO PNG]***<span id="description"></span></p>
+<p>***For best results use smaller images. Images that are around 32x32 work best.***<span id="description2"></span></p>
+
+<p>1. Upload image using "Choose File" Button and confirm that the correct image is chosen(Image will appear on the bottom of this page)<span id="instruction"></span></p>
+<p>2. Hit predict button and wait a few seconds<span id="instruction2"></span></p>
+<p>3. Hit open prediction button, it will redirect you to a plot with the model's prediction<span id="instruction3"></span></p>
+
+
+<img id="selected-image" src=""/>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+    let base64Image;
+    $("#image-selector").change(function() {
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            let dataURL = reader.result;
+            $('#selected-image').attr("src", dataURL);
+            base64Image = dataURL.replace("data:image/png;base64,","");
+            console.log(base64Image)
+        }
+        reader.readAsDataURL($("#image-selector")[0].files[0]);
+    });
+
+    $("#predict-button").click(function(event){
+        let message = {
+            image: base64Image
+        }
+        console.log(message);
+        $.post("http://localhost:5000/predict", JSON.stringify(message), function(response){
+            console.log(response);
+        });
+    });
+
+</script>
+</body>
+</html>
